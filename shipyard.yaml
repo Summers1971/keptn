@@ -1,0 +1,57 @@
+apiVersion: spec.keptn.sh/1.2.0
+kind: Shipyard
+metadata:
+  name: Negative Platform Services
+spec:
+  stages:
+    - name: dev
+      sequences:
+        - name: delivery
+          tasks:
+          - name: deployment
+            properties:
+              deploymentstrategy: direct
+          - name: test
+            properties:
+              teststrategy: functional
+          - name: validate
+          - name: rollback
+            triggeredOn:
+            - event: production.validate.finished
+              selector:
+                match:
+                  result: failed
+            tasks:
+            - name: rollback
+          - name: evauluation
+            tasks:
+            - name: soak
+              triggeredAfter: "60m"
+            - name: evaluation
+          - name: release
+
+    - name: staging
+      sequences:
+        - name: delivery
+          tasks:
+          - name: deployment
+            properties:
+              deploymentstrategy: direct
+          - name: test
+            properties:
+              teststrategy: functional
+          - name: validate
+          - name: rollback
+            triggeredOn:
+            - event: production.validate.finished
+              selector:
+                match:
+                  result: failed
+            tasks:
+            - name: rollback
+          - name: evauluation
+            tasks:
+            - name: soak
+              triggeredAfter: "2h"
+            - name: evaluation
+          - name: release
